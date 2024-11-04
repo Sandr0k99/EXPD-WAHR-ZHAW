@@ -16,3 +16,5 @@ barplot(table(data$gmat),
 data_clean <- data$race[!is.na(data$race) & data$race != ""]
 pie(table(data_clean))
 
+
+cor(data$gmat, data$gpa)
