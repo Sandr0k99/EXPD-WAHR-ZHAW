@@ -1,0 +1,339 @@
+---
+title: "Workshop Konsumentenpreise"
+author: "Nima Riahi"
+date: "2023-11-30"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    collapsed: false
+    smooth_scroll: true
+    highlight: pygments
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+```
+
+
+# Workshop Session: Exploration Landesindex Konsumentenpreise
+
+Wir untersuchen den vom BfS veröffentlichten Landesindex Konsumentenpreise (Teuerungsdaten :-). Wie sehr sind die Kosten für Konsumenten in der Schweiz gestiegen? Wie verechnet sich der Gesamtindex? Wie setzt er sich zusammen?
+
+Die Daten ([lik-bfs]) stehen als Excel Datei bereit. Wir beschränkten uns primär auf den Reiter `INDEX_m`, der die Indexdaten enthält. Der Index wird relativ granular für verschiedene Konsumsegmente berechnet wie z.B. Frühstückscerealien, Wohnmöbel, Getränke im Restaurant, Belletristik-Bücher. Diese granularen Levels werden dann aggregiert auf grössere Segmente (z.B. Bekleidung, Verkehr, Restaurant und Hotels, etc.). Diese Granularitätsstufen werden mit dem `Level` (ein Integer) identifiziert. 
+
+Im letzten Abschnitt betrachten wir auch die Preisänderungen, die im Reiter `VAR_m-1` enthalten sind.
+
+[lik-bfs]: https://www.bfs.admin.ch/bfs/de/home/statistiken/preise/landesindex-konsumentenpreise/detailresultate.assetdetail.29065700.html
+
+
+```{r, warning=FALSE, eval=TRUE, echo=FALSE, message=FALSE}
+
+# Dieser Chunk dient der Datenaufbereitung für die Exploration der LIK Werte
+library(readxl)
+library(tidyverse)
+
+# Data source Landesindex Konsumentenpreise (LIK)
+dat <- read_xlsx(file.path("data", "su-d-05.02.67.xlsx"), 
+                 sheet = "INDEX_m",
+                 range = "A4:SW420")
+
+dat_proc <- dat %>% 
+  select(PosNo, Position_D, Level, matches("[0-9]{5}"))
+
+# Enforce LIK for all timestamps to be numeric
+dat_proc[4:ncol(dat_proc)]  <- lapply(dat_proc[4:ncol(dat_proc)], as.numeric)
+
+# Pivot long: Die meisten Spalten enthalten LIK Werte für ein bestimmtes Datum. 
+# Wir machen einen Pivot, bei dem die Spaltennamen die Zeitstempel sind zu einer 
+# Variable "Datum" werden und die Werte in den ursprünglichen Zellen dieser Spalten
+# zur neuen Spalte "LIK" werden.
+dat_proc <- dat_proc %>% 
+  pivot_longer(
+    cols = !matches("Pos.+|Level"), 
+    names_to = "Datum", values_to = "LIK"
+    ) %>% 
+  mutate(Datum=as.Date(as.numeric(Datum), origin="1899-12-30"))  # Am Ende noch die Konversion der Datums-werte in den Datentyp "Date"
+
+```
+
+```{r, echo=FALSE}
+# Explizite Farbskalen selber auswählen:
+# https://colorbrewer2.org/#type=qualitative&scheme=Paired&n=12
+col_brewer <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', "black")
+
+```
+
+# Beschreibung des Datensatzes
+
+Die Daten wurden in die Varaible `data_proc` geladen. Der Datensatz enhält monatlich aufgelöste Preisänderungsdaten von Dezember 1982 bis Oktober 2023.
+
+```{r, echo=FALSE}
+sprintf("Datumsbereich der Daten: %s bis %s", min(dat_proc$Datum), max(dat_proc$Datum))
+
+sprintf("Aufteilung der Index-Tiefen, exemplarisch für Oktober 2023:")
+dat_proc %>% filter(Datum=="2023-10-01") %>% select(Level) %>% table %>% print
+```
+Eine detaillierte Betrachtung wird direkt im Excel gemacht.
+
+
+# Gesamtüberblick über die Hauptkategorien des LIK
+
+Wir visualisieren als erstes den Gesamtindex (`Level==1`). 
+
+
+```{r, echo=TRUE, fig.width=10, fig.height=4, warning=FALSE}
+
+dat_proc_p <- dat_proc %>% filter(Level==1)
+ggplot(dat_proc_p, aes(x=Datum, y=LIK)) +
+  geom_line(color="black") +
+  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+  scale_y_continuous(
+    sec.axis = sec_axis( 
+      trans = function(x) {100*x/min(dat_proc_p$LIK)},
+      breaks = seq(100,170,10), labels = sprintf("%.0f%%",seq(100,170,10))
+      )
+  ) + 
+  labs(title="Landesindex Konsumentenpreise (gesamt)")
+
+```
+
+Was können wir beobachten?
+
+- Verhalten der Steigung
+- Variabilität der Kurve
+- Effektive Teuerung?
+
+
+Die folgende Darstellung zeigt die Indizes der Hauptkategorien, aus denen sich der Gesamtindex zusammensetzt (`Level == 2`):
+
+```{r, echo=TRUE, fig.width=12, fig.height=5, warning=FALSE}
+
+dat_proc_p <- dat_proc %>% filter(Level == 2)
+ggplot(dat_proc_p, aes(x=Datum, y=LIK, color=Position_D)) +
+  geom_line() +
+  scale_color_manual(values = col_brewer) +
+  labs(colour="", title="LIK nach Hauptkategorien") +
+  scale_x_date(date_breaks = "2 years", date_labels = "%Y")  
+
+```
+
+
+Diskussion:
+
+- Sind die Indizes der Hauptkategorien vergleichbar?
+- Was geschah mit dem Segment "Bekleidung und Schuhe" ab 2000?
+- Wie ist die Situation ab 2020 (Corona) zu beschreiben im Kontext der letzten 40 Jahre?
+
+
+Beschränkung auf 2019 bis heute:
+
+```{r, eval=TRUE, echo=TRUE, fig.width=12, fig.height=5}
+
+dat_proc_p <- dat_proc %>% filter(Level==2) %>% filter(Datum>="2019-01-01")
+# dat_proc_p <- dat_proc %>% filter(Pos)
+ggplot(dat_proc_p, aes(x=Datum, y=LIK, color=Position_D)) +
+  geom_line() +
+  scale_color_manual(values = col_brewer) +
+  scale_x_date(
+    breaks = seq.Date(as.Date("2019-01-01"), as.Date("2023-11-01"), by = "6 months"), 
+    date_labels = "%Y-%m", 
+    limits = as.Date(c("2019-01-01", "2023-12-01"))
+    ) +
+  labs(colour="", title="LIK nach Hauptkategorien") 
+```
+
+
+## Verkehr
+
+```{r, eval=TRUE, echo=TRUE, fig.width=12, fig.height=4, warning=FALSE}
+
+dat_proc_p <- dat_proc %>% 
+  filter(Datum>="2019-01-01") %>% 
+  filter(PosNo>=7000 & PosNo<8000) %>% filter(Level==4)
+
+ggplot(dat_proc_p, aes(x=Datum, y=LIK, color=Position_D)) +
+  geom_line() +
+  scale_color_manual(values = col_brewer) +
+  scale_x_date(
+    breaks = seq.Date(as.Date("2019-01-01"), as.Date("2023-11-01"), by = "6 months"), 
+    date_labels = "%Y-%m", 
+    limits = as.Date(c("2019-01-01", "2023-12-01"))
+    ) +
+  labs(colour="Unterkategorien", title="LIK: Verkehr")
+
+
+```
+Diskussion:
+
+- Welche Rolle spielte der öffentliche Verkehr für die Teuerung?
+- Was hat es mit den Preis _Bumps_ im Luftverkehr auf sich? 
+- Wie würden Sie Flugverkehr, ÖV und Taxi gewichten für die Berechnung des Index "Verkehr"?
+
+## Wohnen und Energie
+
+```{r, eval=TRUE, echo=TRUE, fig.width=12, fig.height=4, warning=FALSE}
+
+dat_proc_p <- dat_proc %>% 
+  filter(Datum>="2019-01-01") %>% 
+  filter(PosNo>=4000 & PosNo<5000) %>% filter(Level==4)
+
+ggplot(dat_proc_p, aes(x=Datum, y=LIK, color=Position_D)) +
+  geom_line() +
+  scale_color_manual(values = col_brewer) +
+  scale_x_date(
+    breaks = seq.Date(as.Date("2019-01-01"), as.Date("2023-11-01"), by = "6 months"), 
+    date_labels = "%Y-%m", 
+    limits = as.Date(c("2019-01-01", "2023-12-01"))
+    ) +
+  labs(colour="Unterkategorien", title="LIK: Wohnen und Energie")
+
+
+```
+
+Diskussion:
+
+- Was treibt die Teuerung primär an?
+- Wie ist die Bezeichnung der Hauptkategorie des Index zu beurteilen für diese Analyseperiode?
+
+## Kleidung
+
+```{r, eval=TRUE, echo=TRUE, fig.width=12, fig.height=4, warning=FALSE}
+dat_proc_p <- dat_proc %>% 
+  filter(Datum>="2019-01-01") %>% 
+  filter(PosNo>=3000 & PosNo<4000) %>% filter(Level==4)
+
+ggplot(dat_proc_p, aes(x=Datum, y=LIK, color=Position_D)) +
+  geom_line() +
+  scale_color_manual(values = col_brewer) +
+  scale_x_date(
+    breaks = seq.Date(as.Date("2019-01-01"), as.Date("2023-11-01"), by = "6 months"), 
+    date_labels = "%Y-%m", limits = as.Date(c("2019-01-01", "2023-12-01"))) +
+  labs(colour="Unterkategorien") +
+  ggtitle("Konsumentenindex: Kleidung")
+
+```
+
+Diskussion:
+
+- Wir würden Sie die deutlich erkennbaren "Wellenlinien" charakterisieren?
+- Was könnte die Ursache dafür sein?
+
+## Restaurants und Hotels
+
+```{r, eval=TRUE, echo=TRUE, fig.width=12, fig.height=4, warning=FALSE}
+
+dat_proc_p <- dat_proc %>% 
+  filter(Datum>="2019-01-01") %>% 
+  filter(PosNo>=11000 & PosNo<12000) %>% filter(Level==4)
+
+ggplot(dat_proc_p, aes(x=Datum, y=LIK, color=Position_D)) +
+  geom_line() +
+  scale_color_manual(values = col_brewer) +
+  scale_x_date(
+    breaks = seq.Date(as.Date("2019-01-01"), as.Date("2023-11-01"), by = "6 months"), 
+    date_labels = "%Y-%m") +
+  labs(colour="Unterkategorien") +
+  ggtitle("Konsumentenindex: Restaurants + Hotels")
+
+
+```
+
+
+
+
+## Preisänderungen
+
+Wir betrachten im Folgenden die prozentualen Preisänderungen auf den jeweiligen Vormonat.
+
+```{r, warning=FALSE, eval=TRUE, echo=FALSE, message=FALSE}
+
+# Data source Landesindex Konsumentenpreise (LIK). Diesmal laden wir die prozentualen 
+# monatlichen Änderungen. Quelle:
+# https://www.bfs.admin.ch/bfs/de/home/statistiken/preise/landesindex-konsumentenpreise/detailresultate.assetdetail.29065700.html
+dat_var <- read_xlsx(file.path("data", "su-d-05.02.67.xlsx"), 
+                 sheet = "VAR_m-1",
+                 range = "A4:SK420")
+
+dat_proc <- dat_var %>% 
+  select(PosNo, Position_D, Level, matches("[0-9]{5}"))
+
+# Enforce LIK data for all timestamps to be numeric
+dat_proc[4:ncol(dat_proc)]  <- lapply(dat_proc[4:ncol(dat_proc)], as.numeric)
+  
+# Pivot long: Die meisten Spalten enthalten LIK Werte für ein Datum. Wir machen einen
+# Pivot, bei dem die Spaltennamen (d.h. Zeitstempel) in einer Variable "Datum" 
+# gesammelt werden und die Werte in den ursprünglichen Spalten zur neuen Spalte 
+# "LIK" werden.
+dat_proc <- dat_proc %>% pivot_longer(
+    cols = !matches("Pos.+|Level"), 
+    names_to = "Datum", values_to = "preis_var"
+    ) %>% 
+  mutate(Datum=as.Date(as.numeric(Datum), origin="1899-12-30"))  # Am Ende noch die Konversion der Datums-werte in den Datentyp "Date"
+
+```
+
+Nachfolgend die Visualisierung der monatlichen prozentualen Änderungen für die 12 Hauptkategorien des Landesindex:
+
+```{r, eval=TRUE, echo=TRUE, fig.width=12, fig.height=5, warning=FALSE}
+
+dat_proc_p <- dat_proc %>% filter(Level==2)
+
+ggplot(dat_proc_p, aes(x=Datum, y=preis_var, color=Position_D)) +
+  geom_line() +
+  scale_color_manual(values = col_brewer) +
+  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+  labs(colour="Unterkategorien", y="Änderung zum Vormonat [%]") +
+  ggtitle("Preisänderungen: Restaurants + Hotels")
+
+```
+
+Die stark saisonale Komponente des Warenkorbteils "Bekleidung und Schuhe" ist in dieser Darstellung noch deutlicher erkennbar.
+
+Hier die monatlichen prozentualen Änderungen des Gesamtindex:
+
+```{r, eval=TRUE, echo=TRUE, fig.width=12, fig.height=5, warning=FALSE}
+
+dat_proc_p <- dat_proc %>% filter(Level==1)
+ggplot(dat_proc_p, aes(x=Datum, y=preis_var)) +
+  geom_line() +
+  scale_x_date(
+    date_breaks = "2 years", 
+    date_labels = "%Y") +
+  scale_y_continuous(
+    breaks = seq(-1.5,1.5,.25),
+    name = "Pozentuale Änderung Vormonat"
+    ) +
+  geom_hline(yintercept = 0, color="darkred", linetype = "dashed")
+
+  
+```
+Können wir den Gesamtindex reproduzieren basierend auf die monatlichen Änderungsraten? Dazu führen wir eine kumulative Multiplikation der monatlichen Änderungsraten durch.
+
+```{r, eval=TRUE, echo=TRUE, fig.width=12, fig.height=5, warning=FALSE}
+# Prozentuale Änderungen
+v <- dat_proc_p$preis_var
+# Multiplikativer Faktor der Änderung
+v <- v/100 + 1
+# Der erste Zeitstempel erhält den Wert 1
+v[1] <- 1
+# Kumulative Multiplikation
+v <- cumprod(v)
+
+
+dat_proc_p$preis_var_cum <- v
+ggplot(dat_proc_p, aes(x=Datum, y=preis_var_cum)) +
+  geom_line() +
+  scale_x_date(
+    date_breaks = "2 years", 
+    date_labels = "%Y") +
+  scale_y_continuous(
+    breaks = seq(1,1.7,.1),
+    labels = sprintf("%.0f%%", 100*seq(1,1.7,.1)),
+    name = "Pozentuale Indexsteigerung ab Start"
+    )
+
+```
+

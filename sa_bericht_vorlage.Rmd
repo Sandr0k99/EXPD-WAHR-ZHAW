@@ -1,0 +1,45 @@
+---
+title: "Titel der Semesterarbeit"
+author: "Alle Namen der Gruppenmitglieder"
+date: "2024-xx-xx"
+output: 
+  html_document:
+    highlight: pygments
+---
+
+
+```{r setup, include=FALSE}
+# Setzen Sie hier die Defaultwerte für die R-Code Chunks
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message=FALSE, eval=TRUE)
+```
+
+
+# Einleitung
+
+Beschreiben Sie, welches Phänomen (oder Geschäftsthema) in diesem Bericht untersucht wird. Wieso ist der Datensatz für Sie (oder die Leserin, den Leser) interessant? Sie können auch schon auf den verwendeten Datensatz hinweisen.
+
+# Daten
+
+Beschreiben Sie die Daten, die Sie verwenden. Folgende Fragen sollten beantwortet werden:
+
+- Woher stammt der Datensatz? Was ist die Quelle? 
+- Warum wurden die Daten erfasst? (*optional*)
+- Welche Variablen sind enthalten? 
+- Was bedeuten die Variablen und welchen Typ haben sie?
+- Wieviele Datenpunkte sind enthalten?
+
+
+# Exploration
+
+## Univariate Analysen
+
+Beschreiben Sie zunächst die Resultate der univariaten Analyse. Interpretieren Sie die Grafiken.
+
+## Bi- und multivariate Analysen
+
+Erklären Sie, wie die univariaten Analysen erweitert werden mit bi- und multivariaten Grafiken und Statistiken. Interpretieren Sie die Grafiken.
+
+# Zusammenfassung 
+
+Fassen Sie die wichtigsten Resultate zusammen. Was haben Sie herausgefunden? Was sind die Schlussfolgerungen?
+

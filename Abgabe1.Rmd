@@ -7,11 +7,13 @@ date: "2024-11-14"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-data <- read.csv('./Data/MBA.csv')
 library(knitr)
 library("GGally")
 library("ggplot2")
 library(dplyr)
+
+data <- read.csv('./Data/MBA.csv')
+data[data$admission == "",'admission'] <- "Reject"
 ```
 
 ## Datenanalyse
@@ -63,4 +65,40 @@ ggplot(data, aes(x = gmat, fill = gender)) +
   theme_minimal() +
   labs(x = "GMAT Score", y = "Count", title = "Distribution of GMAT Scores by Gender")
 
+```
+
+## Multivariate Grafiken
+```{r multivariate}
+ggplot(data, aes(x = gmat, y = gpa, color = admission)) +
+  geom_jitter(alpha = 0.7, height = 0, width = 2.5, size = 1) +
+  scale_color_manual(
+    values = c("Admit" = "#1b9e77", "Reject" = "#d95f02", "Waitlist" = "#7570b3")
+  ) +
+  labs(
+    title = "Beziehung zwischen GMAT, GPA und Zulassungsstatus",
+    x = "GMAT-Punktzahl",
+    y = "GPA",
+    color = "Zulassungsstatus"
+  ) +
+  theme_minimal()
+
+ggplot(data, aes(x = admission, y = work_exp, fill = admission)) +
+  geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  geom_jitter(aes(color = major), alpha = 0.4, width = 0.2, size = 1) +
+  scale_fill_manual(
+    values = c("Admit" = "#1b9e77", "Reject" = "#d95f02", "Waitlist" = "#7570b3")
+  ) +
+  scale_color_manual(
+    values = c("Business" = "#ffcc00", "Humanities" = "#9966cc", "STEM" = "#3399ff")
+  ) +
+  facet_wrap(~work_industry) +
+  labs(
+    title = "Berufserfahrung nach Branche, Zulassungsstatus und Studiengang",
+    x = "Zulassungsstatus",
+    y = "Berufserfahrung (Jahre)",
+    fill = "Zulassungsstatus",
+    color = "Studiengang"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
