@@ -41,7 +41,7 @@ Der Datensatz enthält die folgenden Variablen:
 
 | **Variable**         | **Beschreibung**                                                                                                                                         | **Datentyp**  |
 |-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| `admission`          | Zulassungsstatus: Gibt an, ob die Bewerbung **Admit (zugelassen)**, **Reject (abgelehnt)** oder **Waitlist (Warteliste)** wurde.                        | Faktor        |
+| `admission`          | Gibt den Bewerbungsstatus der Bewerbung an: **zugelassen (Admit)**, **abgelehnt (Reject)** oder **Warteliste (Waitlist)**                        | Faktor        |
 | `gmat`               | GMAT-Punktzahl des Bewerbers (numeric), eine standardisierte Bewertung für MBA-Zulassungen.                                                             | Numerisch     |
 | `gpa`                | GPA (Grade Point Average) des Bewerbers im vorherigen Studium, ein Mass für akademische Leistung.                                                        | Numerisch     |
 | `work_exp`           | Berufserfahrung in Jahren.                                                                                                                             | Numerisch     |
@@ -71,7 +71,7 @@ Der Datensatz enthält **6149 Datenpunkte**. Jeder Datenpunkt entspricht einem B
 
 ## Univariate Analysen
 
-### Verteilung der GMAT-Punktzahlen
+### **Verteilung der GMAT-Punktzahlen**
 
 Die erste Grafik zeigt ein Histogramm der GMAT-Punktzahlen aller Bewerber. Die GMAT-Werte sind in Intervallen von 10 zusammengefasst, mit einem Anfangspunkt bei 560. Die Achse \(x\) zeigt die GMAT-Punktzahl, während die Achse \(y\) die Anzahl der Bewerber in jeder Punktzahlklasse darstellt. 
 
@@ -93,7 +93,7 @@ ggplot(data, aes(x=gmat))+
 ```
 
 ---
-### Prozentuale Verteilung der ethnischer Zugehörigkeit
+### **Prozentuale Verteilung der ethnischer Zugehörigkeit**
 Die zweite Grafik zeigt ein **Kreisdiagramm**, das die prozentuale Verteilung der Bewerber nach ethnischer Zugehörigkeit darstellt. Die Anteile der einzelnen Gruppen sind farblich unterschiedlich dargestellt, mit einer Legende zur Identifikation.
 
 **Beobachtungen:**
@@ -126,24 +126,70 @@ ggplot(race_counts, aes(x = "", y = Count, fill = Race)) +
 
 ## Bi- und multivariate Analysen
 
-Erklären Sie, wie die univariaten Analysen erweitert werden mit bi- und multivariaten Grafiken und Statistiken. Interpretieren Sie die Grafiken.
+### **Verteilung der Berufserfahrung in Abhängigkeit vom Zulassungsstatus**
+Die Violin-Grafik zeigt die Verteilung der **Berufserfahrung** für jeden **Zulassungsstatus**
+
+#### **Beobachtungen:**
+1. **Admit:**
+   - Die Verteilung ist breiter und konzentriert sich auf höhere Werte (ca. 4–7 Jahre).
+   - Zugelassene Bewerber haben im Durchschnitt mehr Berufserfahrung als die anderen Gruppen.
+
+2. **Reject:**
+   - Die Verteilung ist symmetrischer und zeigt eine Konzentration um 3–5 Jahre Berufserfahrung.
+   - Bewerber mit sehr geringer oder sehr hoher Berufserfahrung sind in dieser Gruppe ebenfalls vertreten.
+
+3. **Waitlist:**
+   - Die Verteilung ähnelt der Ablehnungsgruppe, konzentriert sich jedoch etwas stärker um 4–5 Jahre.
+   - Wartelistenbewerber haben eine geringere Spannbreite der Berufserfahrung im Vergleich zu den anderen Gruppen.
+
+### Interpretation
+Die bivariate Analyse zeigt, dass Bewerber mit mehr Berufserfahrung eine höhere Chance auf eine Zulassung haben. Dies gilt insbesondere für Werte über 4 Jahren.
+
 
 ```{r bivariat1}
-boxplot(data$gmat~data$major,
-        ylab="GMAT score",
-        xlab="Undergraduate Major")
+ggplot(data, aes(x = admission, y = work_exp, fill = admission)) +
+  geom_violin(alpha = 0.7, trim = FALSE) +
+  scale_fill_manual(
+    values = c("Admit" = "#1b9e77", "Reject" = "#d95f02", "Waitlist" = "#7570b3")
+  ) +
+  labs(
+    title = "Verteilung der Berufserfahrung nach Zulassungsstatus",
+    x = "Zulassungsstatus",
+    y = "Berufserfahrung (Jahre)",
+    fill = "Zulassungsstatus"
+  ) +
+  theme_minimal()
 ```
+
+### **Verteilung der Berufserfahrung nach Studiengang**
+
+Die Histogramm-Grafik zeigt die Verteilung der **Berufserfahrung**, aufgeteilt nach den **Studiengängen**
+
+#### **Beobachtungen:**
+1. **Gesamte Verteilung:**
+   - Die Berufserfahrung konzentriert sich bei allen Studiengängen im Bereich von **3 bis 6 Jahren**.
+   - Die Verteilung folgt bei allen Gruppen einer glockenförmigen Kurve, was auf eine Normalverteilung hinweist.
+
+2. **Studiengangsabhängige Unterschiede:**
+   - Bewerber auf einen **Humanities** Studiengang stellen die grösste Gruppe.
+   - Bewerber aus **Business** und **STEM** haben eine ähnliche Verteilung.
+
 
 ```{r bivariat2}
-ggplot(data, aes(x = gmat, fill = gender)) +
-  geom_histogram(bins = 30, position = "identity", color = "white", alpha = 0.7) +
-  facet_grid(gender ~ .) +
-  coord_flip() +
-  theme_minimal() +
-  labs(x = "GMAT Score", y = "Count", title = "Distribution of GMAT Scores by Gender")
+ggplot(data, aes(x = work_exp, fill = major)) +
+  geom_histogram(binwidth = 1, position = "dodge", alpha = 0.8, color = "black") +
+  scale_fill_manual(
+    values = c("STEM" = "#ffcc00", "Humanities" = "#3399ff", "Business" = "#9966cc")
+  ) +
+  labs(
+    title = "Verteilung der Berufserfahrung nach Studiengang",
+    x = "Berufserfahrung (Jahre)",
+    y = "Anzahl",
+    fill = "Studiengang"
+  ) +
+  theme_minimal()
 ```
 
-### Erweiterung der Analysen durch bi- und multivariate Grafiken
 
 #### **Zusammenhang zwischen GMAT, GPA und Zulassungsstatus der Bewerber**
 
@@ -175,7 +221,7 @@ ggplot(data, aes(x = gmat, y = gpa, color = admission)) +
   theme_minimal()
 ```
 
-### Einfluss von Branche, Berufserfahrung und Studiengang auf den Zulassungsstatus 
+### **Einfluss von Branche, Berufserfahrung und Studiengang auf den Zulassungsstatus**
 
 Die dargestellte Grafik untersucht die **Berufserfahrung** der Bewerber in verschiedenen Branchen, unterteilt nach **Zulassungsstatus** und **Studiengang**.
 

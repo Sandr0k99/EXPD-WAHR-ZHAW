@@ -1,7 +1,10 @@
 install.packages("GGally")
+install.packages("ggmosaic")
 library("GGally")
 library("ggplot2")
 library(dplyr)
+library(ggbeeswarm)
+library(ggmosaic)
 ggpairs(data[,c('gender','gpa', 'gmat')])
 
 data <- read.csv('./Data/MBA.csv')
@@ -135,5 +138,53 @@ ggplot(data, aes(x = admission, y = work_exp, fill = admission)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+
+
+
+ggplot(data, aes(x = admission, y = work_exp, fill = admission)) +
+  geom_violin(alpha = 0.7, trim = FALSE) +
+  scale_fill_manual(
+    values = c("Admit" = "#1b9e77", "Reject" = "#d95f02", "Waitlist" = "#7570b3")
+  ) +
+  labs(
+    title = "Verteilung der Berufserfahrung nach Zulassungsstatus",
+    x = "Zulassungsstatus",
+    y = "Berufserfahrung (Jahre)",
+    fill = "Zulassungsstatus"
+  ) +
+  theme_minimal()
+
+ggplot(data, aes(x = work_industry, fill = admission)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  scale_fill_manual(
+    values = c("Admit" = "#1b9e77", "Reject" = "#d95f02", "Waitlist" = "#7570b3")
+  ) +
+  labs(
+    title = "Prozentuale Verteilung des Zulassungsstatus nach Branche",
+    x = "Branche",
+    y = "Prozentuale Verteilung",
+    fill = "Zulassungsstatus"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+
+ggplot(data, aes(x = work_exp, fill = major)) +
+  geom_histogram(binwidth = 1, position = "dodge", alpha = 0.8, color = "black") +
+  scale_fill_manual(
+    values = c("STEM" = "#ffcc00", "Humanities" = "#3399ff", "Business" = "#9966cc")
+  ) +
+  labs(
+    title = "Verteilung der Berufserfahrung nach Studiengang",
+    x = "Berufserfahrung (Jahre)",
+    y = "Anzahl",
+    fill = "Studiengang"
+  ) +
+  theme_minimal()
+
+
+summary(data)
 
 
