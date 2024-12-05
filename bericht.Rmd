@@ -1,0 +1,183 @@
+---
+title: "Titel der Semesterarbeit"
+author: "Sandro Kostenzer, Bryan Bernhauser, Illia Dollhov"
+date: "2024-12-05"
+output: 
+  html_document:
+    highlight: pygments
+---
+
+
+```{r setup, include=FALSE}
+# Setzen Sie hier die Defaultwerte für die R-Code Chunks
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message=FALSE, eval=TRUE)
+library(knitr)
+library("GGally")
+library("ggplot2")
+library(dplyr)
+
+data <- read.csv('./Data/MBA.csv')
+data[data$admission == "",'admission'] <- "Reject"
+```
+
+
+# Einleitung
+In diesem Bericht wird das Phänomen der Zulassung zu einem MBA-Programm analysiert, mit besonderem Fokus auf die Faktoren, die die Entscheidung beeinflussen könnten. Der zugrunde liegende Datensatz enthält Informationen über Bewerberinnen und Bewerber, darunter GMAT-Ergebnisse, GPA-Werte (Grade Point Average), berufliche Erfahrung, Studiengänge, Ethnizität, Geschlecht sowie den Zulassungsstatus.
+
+# Daten
+
+## Herkunft des Datensatzes
+Der Datensatz stammt von **Kaggle**, einer Plattform für Datenwissenschaft und maschinelles Lernen. Er wurde von **Tawei Lo** bereitgestellt und enthält Informationen über MBA-Bewerbungen. Kaggle ist bekannt für qualitativ hochwertige und gut kuratierte Datensätze, die von Forschern und Praktikern genutzt werden.
+
+---
+
+## Zweck der Datenerfassung
+Die Daten wurden vermutlich gesammelt, um Muster und Trends im Zulassungsprozess zu analysieren. Business Schools könnten solche Datensätze nutzen, um ihren Entscheidungsprozess zu verbessern und Diversität, akademische Exzellenz sowie berufliche Erfahrungen in Einklang zu bringen.
+
+---
+
+## Variablen im Datensatz
+Der Datensatz enthält die folgenden Variablen:
+
+| **Variable**         | **Beschreibung**                                                                                                                                         | **Datentyp**  |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| `admission`          | Zulassungsstatus: Gibt an, ob die Bewerbung **Admit (zugelassen)**, **Reject (abgelehnt)** oder **Waitlist (Warteliste)** wurde.                        | Faktor        |
+| `gmat`               | GMAT-Punktzahl des Bewerbers (numeric), eine standardisierte Bewertung für MBA-Zulassungen.                                                             | Numerisch     |
+| `gpa`                | GPA (Grade Point Average) des Bewerbers im vorherigen Studium, ein Mass für akademische Leistung.                                                        | Numerisch     |
+| `work_exp`           | Berufserfahrung in Jahren.                                                                                                                             | Numerisch     |
+| `major`              | Studienfach des Bewerbers (z. B. Business, STEM, Humanities).                                                                                           | Faktor        |
+| `gender`             | Geschlecht des Bewerbers (Male, Female).                                                                                                                | Faktor        |
+| `race`               | Ethnische Zugehörigkeit (z. B. Asian, White, African American, etc.).                                                                                   | Faktor        |
+| `work_industry`      | Branche der bisherigen Berufserfahrung (z. B. Finance, Technology, Education).                                                                          | Faktor        |
+
+---
+
+## Bedeutung der Variablen
+- **GMAT und GPA:** Wichtige akademische Kriterien zur Beurteilung der intellektuellen und akademischen Fähigkeiten des Bewerbers.
+- **Work Experience:** Zeigt, wie viel Berufserfahrung die Bewerber mitbringen, ein bedeutender Faktor für MBA-Programme.
+- **Major:** Repräsentiert den Studienhintergrund der Bewerber und kann Hinweise darauf geben, wie vielfältig ihre akademischen Hintergründe sind.
+- **Gender, Race:** Bieten Einblicke in die Diversität der Bewerber und helfen, mögliche Muster in der Zulassung zu erkennen.
+- **Work Industry:** Zeigt die beruflichen Branchen, in denen die Bewerber bisher tätig waren, und gibt Aufschluss über Karrieretypen.
+
+---
+
+## Datenpunkte
+Der Datensatz enthält **6149 Datenpunkte**. Jeder Datenpunkt entspricht einem Bewerber und enthält Informationen zu den oben genannten Variablen.
+
+---
+
+
+# Exploration
+
+## Univariate Analysen
+
+### Verteilung der GMAT-Punktzahlen
+
+Die erste Grafik zeigt ein Histogramm der GMAT-Punktzahlen aller Bewerber. Die GMAT-Werte sind in Intervallen von 10 zusammengefasst, mit einem Anfangspunkt bei 560. Die Achse \(x\) zeigt die GMAT-Punktzahl, während die Achse \(y\) die Anzahl der Bewerber in jeder Punktzahlklasse darstellt. 
+
+**Beobachtungen:**
+- Die GMAT-Punktzahlen der Bewerber sind leicht rechtsschief und bimodal.
+- Der häufigste Bereich liegt zwischen **570 und 580**.
+- Punktzahlen über 720 sind weniger häufig vertreten.
+
+**Interpretation:**  
+Die GMAT-Verteilung spiegelt die akademische Kompetenz der Bewerber wider. Ein grosser Anteil erreicht Punktzahlen, die typischerweise als wettbewerbsfähig für MBA-Zulassungen gelten. Bewerber mit sehr hohen Punktzahlen stellen eine kleinere Gruppe dar, was auf die Selektivität und den Schwierigkeitsgrad des Tests hinweist.
+
+```{r univariat1}
+ggplot(data, aes(x=gmat))+
+  geom_histogram(color='black', fill='lightblue', binwidth = 10,boundary = 560)+
+  scale_x_continuous(breaks = seq(540,800, by = 20))+
+  theme_minimal() +
+  labs(title = "GMAT Score von Bewerbern", y='Anzahl', x='GMAT-Punktzahl')
+```
+
+---
+Die zweite Grafik zeigt ein **Kreisdiagramm**, das die prozentuale Verteilung der Bewerber nach ethnischer Zugehörigkeit darstellt. Die Anteile der einzelnen Gruppen sind farblich unterschiedlich dargestellt, mit einer Legende zur Identifikation.
+
+**Beobachtungen:**
+- **Weisse Bewerber** bilden mit **33,5 %** die grösste Gruppe, gefolgt von **Asiatischen Bewerbern** mit **26,4 %**.
+- **Schwarze Bewerber** machen **21 %**, **Hispanische Bewerber** **13,7 %** und **Andere Bewerber** nur **5,4 %** aus.
+
+**Interpretation:**
+Die Daten zeigen eine gewisse Diversität, jedoch dominieren "White" und "Asian". Unterrepräsentierte Gruppen wie "Hispanic" und "Other" dies könnte auf Barrieren im Zugang oder auf regionale Unterschiede hinweisen.
+
+```{r univariat2}
+races <- data$race[!is.na(data$race) & data$race != ""]
+race_counts <- table(races) %>%
+  as.data.frame() %>%
+  rename(Race = races, Count = Freq) %>%
+  mutate(Percentage = Count / sum(Count) * 100)
+
+ggplot(race_counts, aes(x = "", y = Count, fill = Race)) +
+  geom_bar(stat = "identity", width = 1)+
+  geom_text(aes(label = paste0(round(Percentage, 1), "%")),
+            position = position_stack(vjust = 0.5), size = 4) +
+  coord_polar(theta = "y") +
+  theme_minimal()+
+  theme(axis.text.x = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank()) +
+  labs(title = "Verteilung der ethnischen Zugehörigkeit", fill = "Race", x="", y ="") +
+  scale_fill_brewer(palette = "Set2")
+```
+
+## Bi- und multivariate Analysen
+
+Erklären Sie, wie die univariaten Analysen erweitert werden mit bi- und multivariaten Grafiken und Statistiken. Interpretieren Sie die Grafiken.
+
+```{r bivariat1}
+boxplot(data$gmat~data$major,
+        ylab="GMAT score",
+        xlab="Undergraduate Major")
+```
+
+```{r bivariat2}
+ggplot(data, aes(x = gmat, fill = gender)) +
+  geom_histogram(bins = 30, position = "identity", color = "white", alpha = 0.7) +
+  facet_grid(gender ~ .) +
+  coord_flip() +
+  theme_minimal() +
+  labs(x = "GMAT Score", y = "Count", title = "Distribution of GMAT Scores by Gender")
+```
+
+
+```{r multivariate1}
+ggplot(data, aes(x = gmat, y = gpa, color = admission)) +
+  geom_jitter(alpha = 0.7, height = 0, width = 2.5, size = 1) +
+  scale_color_manual(
+    values = c("Admit" = "#1b9e77", "Reject" = "#d95f02", "Waitlist" = "#7570b3")
+  ) +
+  labs(
+    title = "Beziehung zwischen GMAT, GPA und Zulassungsstatus",
+    x = "GMAT-Punktzahl",
+    y = "GPA",
+    color = "Zulassungsstatus"
+  ) +
+  theme_minimal()
+```
+
+```{r multivariate2}
+ggplot(data, aes(x = admission, y = work_exp, fill = admission)) +
+  geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  geom_jitter(aes(color = major), alpha = 0.4, width = 0.2, size = 1) +
+  scale_fill_manual(
+    values = c("Admit" = "#1b9e77", "Reject" = "#d95f02", "Waitlist" = "#7570b3")
+  ) +
+  scale_color_manual(
+    values = c("Business" = "#ffcc00", "Humanities" = "#9966cc", "STEM" = "#3399ff")
+  ) +
+  facet_wrap(~work_industry) +
+  labs(
+    title = "Berufserfahrung nach Branche, Zulassungsstatus und Studiengang",
+    x = "Zulassungsstatus",
+    y = "Berufserfahrung (Jahre)",
+    fill = "Zulassungsstatus",
+    color = "Studiengang"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+# Zusammenfassung 
+
+Fassen Sie die wichtigsten Resultate zusammen. Was haben Sie herausgefunden? Was sind die Schlussfolgerungen?
+
