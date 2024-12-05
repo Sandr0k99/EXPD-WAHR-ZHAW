@@ -76,11 +76,12 @@ Der Datensatz enthält **6149 Datenpunkte**. Jeder Datenpunkt entspricht einem B
 Die erste Grafik zeigt ein Histogramm der GMAT-Punktzahlen aller Bewerber. Die GMAT-Werte sind in Intervallen von 10 zusammengefasst, mit einem Anfangspunkt bei 560. Die Achse \(x\) zeigt die GMAT-Punktzahl, während die Achse \(y\) die Anzahl der Bewerber in jeder Punktzahlklasse darstellt. 
 
 **Beobachtungen:**
+
 - Die GMAT-Punktzahlen der Bewerber sind leicht rechtsschief und bimodal.
 - Der häufigste Bereich liegt zwischen **570 und 580**.
 - Punktzahlen über 720 sind weniger häufig vertreten.
 
-**Interpretation:**  
+**Interpretation:**\
 Die GMAT-Verteilung spiegelt die akademische Kompetenz der Bewerber wider. Ein grosser Anteil erreicht Punktzahlen, die typischerweise als wettbewerbsfähig für MBA-Zulassungen gelten. Bewerber mit sehr hohen Punktzahlen stellen eine kleinere Gruppe dar, was auf die Selektivität und den Schwierigkeitsgrad des Tests hinweist.
 
 ```{r univariat1}
@@ -92,13 +93,15 @@ ggplot(data, aes(x=gmat))+
 ```
 
 ---
+### Prozentuale Verteilung der ethnischer Zugehörigkeit
 Die zweite Grafik zeigt ein **Kreisdiagramm**, das die prozentuale Verteilung der Bewerber nach ethnischer Zugehörigkeit darstellt. Die Anteile der einzelnen Gruppen sind farblich unterschiedlich dargestellt, mit einer Legende zur Identifikation.
 
 **Beobachtungen:**
+
 - **Weisse Bewerber** bilden mit **33,5 %** die grösste Gruppe, gefolgt von **Asiatischen Bewerbern** mit **26,4 %**.
 - **Schwarze Bewerber** machen **21 %**, **Hispanische Bewerber** **13,7 %** und **Andere Bewerber** nur **5,4 %** aus.
 
-**Interpretation:**
+**Interpretation:**\
 Die Daten zeigen eine gewisse Diversität, jedoch dominieren "White" und "Asian". Unterrepräsentierte Gruppen wie "Hispanic" und "Other" dies könnte auf Barrieren im Zugang oder auf regionale Unterschiede hinweisen.
 
 ```{r univariat2}
@@ -140,6 +143,22 @@ ggplot(data, aes(x = gmat, fill = gender)) +
   labs(x = "GMAT Score", y = "Count", title = "Distribution of GMAT Scores by Gender")
 ```
 
+### Erweiterung der Analysen durch bi- und multivariate Grafiken
+
+#### **Zusammenhang zwischen GMAT, GPA und Zulassungsstatus der Bewerber**
+
+Die dargestellte Grafik zeigt die Beziehung zwischen GMAT-Punktzahl, GPA und Zulassungsstatus
+
+#### **Beobachtungen**
+
+1. **GMAT und GPA:**
+   - Höhere GMAT-Punktzahlen scheinen mit einem höheren GPA verbunden zu sein.
+   - Bewerber mit niedrigen GMAT- und GPA-Werten werden meist abgelehnt.
+   
+2. **Zulassungsstatus:**
+   - **Zulassungen (grüne Punkte)** konzentrieren sich auf Bewerber mit höheren GMAT-Punktzahlen (über 700) und GPAs (über 3.4).
+   - **Wartelisten-Bewerber (lila Punkte)** liegen tendenziell zwischen den Extremen, jedoch näher an den abgelehnten Bewerbern.
+   - **Abgelehnte Bewerber (orange Punkte)** sind stark im unteren Bereich der GMAT- und GPA-Werte vertreten.
 
 ```{r multivariate1}
 ggplot(data, aes(x = gmat, y = gpa, color = admission)) +
@@ -155,6 +174,26 @@ ggplot(data, aes(x = gmat, y = gpa, color = admission)) +
   ) +
   theme_minimal()
 ```
+
+### Einfluss von Branche, Berufserfahrung und Studiengang auf den Zulassungsstatus 
+
+Die dargestellte Grafik untersucht die **Berufserfahrung** der Bewerber in verschiedenen Branchen, unterteilt nach **Zulassungsstatus** und **Studiengang**.
+
+#### **Beobachtungen**
+1. **Branchenabhängige Berufserfahrung:**
+   - In Branchen wie **Investment Banking**, **Private Equity/Venture Capital (PE/VC)** und **Technology** haben zugelassene Bewerber tendenziell mehr Berufserfahrung (ca. 5–7 Jahre).
+   - In Branchen wie **Nonprofit/Government** und **Retail** spielt Berufserfahrung eine weniger klare Rolle.
+
+2. **Zulassungsstatus:**
+   - Zugelassene Bewerber zeigen oft höhere mittlere Berufserfahrung als abgelehnte oder Wartelistenbewerber.
+   - Ablehnungen sind gleichmäßiger über die Berufserfahrung verteilt.
+
+3. **Studiengang:**
+   - Bewerber mit einem Hintergrund in **Business** oder **STEM** scheinen in wettbewerbsintensiven Branchen wie Investment Banking oder Technology stärker vertreten zu sein.
+   - Bewerber aus **Humanities** treten weniger häufig in hochkompetitiven Branchen auf.
+
+#### **Interpretation**
+Die multivariate Analyse zeigt, dass sowohl die Branche als auch der Studiengang die Bedeutung der Berufserfahrung für die Zulassung beeinflussen. Bewerber aus wettbewerbsintensiven Branchen wie Investment Banking oder Technology mit mehr Berufserfahrung haben bessere Chancen auf eine Zulassung.
 
 ```{r multivariate2}
 ggplot(data, aes(x = admission, y = work_exp, fill = admission)) +
@@ -177,6 +216,7 @@ ggplot(data, aes(x = admission, y = work_exp, fill = admission)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
+
 # Zusammenfassung 
 
 Fassen Sie die wichtigsten Resultate zusammen. Was haben Sie herausgefunden? Was sind die Schlussfolgerungen?
