@@ -22,17 +22,18 @@ data[data$admission == "",'admission'] <- "Reject"
 
 
 # Einleitung
-In diesem Bericht wird das Phänomen der Zulassung zu einem MBA-Programm analysiert, mit besonderem Fokus auf die Faktoren, die die Entscheidung beeinflussen könnten. Der zugrunde liegende Datensatz enthält Informationen über Bewerberinnen und Bewerber, darunter GMAT-Ergebnisse, GPA-Werte (Grade Point Average), berufliche Erfahrung, Studiengänge, Ethnizität, Geschlecht sowie den Zulassungsstatus.
+Im Rahmen dieses Berichts erfolgt eine Analyse des Phänomens der Zulassung zu einem MBA-Programm. Hierbei wird ein besonderes Augenmerk auf die Faktoren gelegt, die die Entscheidung massgeblich beeinflussen könnten. Der zugrunde liegende Datensatz umfasst Informationen über Bewerberinnen und Bewerber, darunter GMAT-Ergebnisse, GPA-Werte (Grade Point Average), berufliche Erfahrung, Studiengänge, Ethnizität, Geschlecht sowie den Zulassungsstatus.
 
 # Daten
 
 ## Herkunft des Datensatzes
-Der Datensatz stammt von **Kaggle**, einer Plattform für Datenwissenschaft und maschinelles Lernen. Er wurde von **Tawei Lo** bereitgestellt und enthält Informationen über MBA-Bewerbungen. Kaggle ist bekannt für qualitativ hochwertige und gut kuratierte Datensätze, die von Forschern und Praktikern genutzt werden.
+Der Datensatz wurde von **Tawei Lo** auf der Plattform Kaggle bereitgestellt, welche sich auf Datenwissenschaft und maschinelles Lernen fokussiert. Der Datensatz beinhaltet Informationen zu MBA-Bewerbungen und zeichnet sich durch eine hohe Qualität sowie eine sorgfältige Auswahl der Daten aus, was ihn für Forscher und Praktiker gleichermassen von Nutzen macht.
 
 ---
 
 ## Zweck der Datenerfassung
-Die Daten wurden vermutlich gesammelt, um Muster und Trends im Zulassungsprozess zu analysieren. Business Schools könnten solche Datensätze nutzen, um ihren Entscheidungsprozess zu verbessern und Diversität sowie berufliche Erfahrungen in Einklang zu bringen.
+
+Die Daten wurden mutmasslich mit dem Ziel gesammelt, Muster und Trends im Zulassungsprozess zu analysieren. Business Schools könnten derartige Datensätze nutzen, um ihren Entscheidungsprozess zu optimieren und Diversität sowie berufliche Erfahrungen in Einklang zu bringen.
 
 ---
 
@@ -62,7 +63,7 @@ Der Datensatz enthält die folgenden Variablen:
 ---
 
 ## Datenpunkte
-Der Datensatz enthält **6149 Datenpunkte**. Jeder Datenpunkt entspricht einem Bewerber und enthält Informationen zu den oben genannten Variablen.
+Der Datensatz umfasst insgesamt **6149 Datenpunkte**, wobei jeder Datenpunkt einem Bewerber entspricht und Informationen zu den zuvor genannten Variablen beinhaltet.
 
 ---
 
@@ -73,7 +74,7 @@ Der Datensatz enthält **6149 Datenpunkte**. Jeder Datenpunkt entspricht einem B
 
 ### **Verteilung der GMAT-Punktzahlen**
 
-Die erste Grafik zeigt ein Histogramm der GMAT-Punktzahlen aller Bewerber. Die GMAT-Werte sind in Intervallen von 10 zusammengefasst, mit einem Anfangspunkt bei 560. Die Achse \(x\) zeigt die GMAT-Punktzahl, während die Achse \(y\) die Anzahl der Bewerber in jeder Punktzahlklasse darstellt. 
+Die erste Grafik präsentiert ein Histogramm der GMAT-Punktzahlen aller Bewerberinnen und Bewerber. Die GMAT-Werte sind in Intervallen von 10 zusammengefasst, wobei der Anfangspunkt bei 560 liegt. Die \(x\)-Achse zeigt die GMAT-Punktzahl, während die \(y\)-Achse die Anzahl der Bewerberinnen und Bewerber in jeder Punktzahlklasse darstellt.
 
 **Beobachtungen:**
 
@@ -94,7 +95,7 @@ ggplot(data, aes(x=gmat))+
 
 ---
 ### **Prozentuale Verteilung der ethnischer Zugehörigkeit**
-Die zweite Grafik zeigt ein **Kreisdiagramm**, das die prozentuale Verteilung der Bewerber nach ethnischer Zugehörigkeit darstellt. Die Anteile der einzelnen Gruppen sind farblich unterschiedlich dargestellt, mit einer Legende zur Identifikation.
+Die zweite Grafik präsentiert ein Kreisdiagramm, welches die prozentuale Verteilung der Bewerberinnen und Bewerber nach ethnischer Zugehörigkeit darstellt. Die Anteile der einzelnen Gruppen sind farblich unterschiedlich visualisiert, wobei eine Legende zur Identifikation bereitgestellt wird.
 
 **Beobachtungen:**
 
@@ -229,14 +230,14 @@ Die dargestellte Grafik untersucht die **Berufserfahrung** der Bewerber in versc
 
 2. **Zulassungsstatus:**
    - Zugelassene Bewerber zeigen oft höhere mittlere Berufserfahrung als abgelehnte oder Wartelistenbewerber.
-   - Ablehnungen sind gleichmäßiger über die Berufserfahrung verteilt.
+   - Ablehnungen sind gleichmässiger über die Berufserfahrung verteilt.
 
 3. **Studiengang:**
    - Bewerber mit einem Hintergrund in **Business** oder **STEM** scheinen in wettbewerbsintensiven Branchen wie Investment Banking oder Technology stärker vertreten zu sein.
    - Bewerber aus **Humanities** treten weniger häufig in hochkompetitiven Branchen auf.
 
 #### **Interpretation**
-Die multivariate Analyse zeigt, dass sowohl die Branche als auch der Studiengang die Bedeutung der Berufserfahrung für die Zulassung beeinflussen. Bewerber aus wettbewerbsintensiven Branchen wie Investment Banking oder Technology mit mehr Berufserfahrung haben bessere Chancen auf eine Zulassung.
+Die Analyse zeigt, dass sowohl die Branche als auch der Studiengang die Bedeutung der Berufserfahrung für die Zulassung beeinflussen. Bewerber aus wettbewerbsintensiven Branchen wie Investment Banking oder Technology mit mehr Berufserfahrung haben bessere Chancen auf eine Zulassung.
 
 ```{r multivariate2}
 ggplot(data, aes(x = admission, y = work_exp, fill = admission)) +
@@ -261,6 +262,4 @@ ggplot(data, aes(x = admission, y = work_exp, fill = admission)) +
 ```
 
 # Zusammenfassung 
-
-Fassen Sie die wichtigsten Resultate zusammen. Was haben Sie herausgefunden? Was sind die Schlussfolgerungen?
-
+Die Analyse zeigt, dass hohe GMAT- und GPA-Werte sowie 4–6 Jahre Berufserfahrung die Zulassungschancen deutlich erhöhen. Insbesondere in wettbewerbsintensiven Branchen wie Investment Banking und Technology spielen diese Kriterien eine entscheidende Rolle. Bewerber sollten ihre GMAT- und GPA-Werte optimieren sowie gezielt Berufserfahrung sammeln, um ihre Chancen zu verbessern. MBA-Programme könnten den Fokus auf diese Faktoren beibehalten, um eine hohe Qualität der zugelassenen Bewerber sicherzustellen.
