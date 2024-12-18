@@ -1,6 +1,6 @@
 ---
-title: "Titel der Semesterarbeit"
-author: "Sandro Kostenzer, Bryan Bernhauser, Illia Dollhov"
+title: "Datenanalyse von Einflussfaktoren im MBA-Zulassungsprozess"
+author: "Sandro Kostenzer, Bryan Bernhauser und Illia Dollhov"
 date: "2024-12-05"
 output: 
   html_document:
@@ -32,7 +32,7 @@ Der Datensatz stammt von **Kaggle**, einer Plattform für Datenwissenschaft und 
 ---
 
 ## Zweck der Datenerfassung
-Die Daten wurden vermutlich gesammelt, um Muster und Trends im Zulassungsprozess zu analysieren. Business Schools könnten solche Datensätze nutzen, um ihren Entscheidungsprozess zu verbessern und Diversität, akademische Exzellenz sowie berufliche Erfahrungen in Einklang zu bringen.
+Die Daten wurden vermutlich gesammelt, um Muster und Trends im Zulassungsprozess zu analysieren. Business Schools könnten solche Datensätze nutzen, um ihren Entscheidungsprozess zu verbessern und Diversität sowie berufliche Erfahrungen in Einklang zu bringen.
 
 ---
 
@@ -131,19 +131,16 @@ Die Violin-Grafik zeigt die Verteilung der **Berufserfahrung** für jeden **Zula
 
 #### **Beobachtungen:**
 1. **Admit:**
-   - Die Verteilung ist breiter und konzentriert sich auf höhere Werte (ca. 4–7 Jahre).
+   - Die Verteilung ist breiter und konzentriert sich auf höhere Werte (ca. 4–6 Jahre).
    - Zugelassene Bewerber haben im Durchschnitt mehr Berufserfahrung als die anderen Gruppen.
 
 2. **Reject:**
-   - Die Verteilung ist symmetrischer und zeigt eine Konzentration um 3–5 Jahre Berufserfahrung.
+   - Die Verteilung ist symmetrischer und zeigt eine Konzentration bei 5 Jahre Berufserfahrung.
    - Bewerber mit sehr geringer oder sehr hoher Berufserfahrung sind in dieser Gruppe ebenfalls vertreten.
 
 3. **Waitlist:**
    - Die Verteilung ähnelt der Ablehnungsgruppe, konzentriert sich jedoch etwas stärker um 4–5 Jahre.
    - Wartelistenbewerber haben eine geringere Spannbreite der Berufserfahrung im Vergleich zu den anderen Gruppen.
-
-### Interpretation
-Die bivariate Analyse zeigt, dass Bewerber mit mehr Berufserfahrung eine höhere Chance auf eine Zulassung haben. Dies gilt insbesondere für Werte über 4 Jahren.
 
 
 ```{r bivariat1}
@@ -202,7 +199,7 @@ Die dargestellte Grafik zeigt die Beziehung zwischen GMAT-Punktzahl, GPA und Zul
    - Bewerber mit niedrigen GMAT- und GPA-Werten werden meist abgelehnt.
    
 2. **Zulassungsstatus:**
-   - **Zulassungen (grüne Punkte)** konzentrieren sich auf Bewerber mit höheren GMAT-Punktzahlen (über 700) und GPAs (über 3.4).
+   - **Zulassungen (grüne Punkte)** konzentrieren sich auf Bewerber mit höheren GMAT-Punktzahlen (über 660) und GPAs (über 3.2).
    - **Wartelisten-Bewerber (lila Punkte)** liegen tendenziell zwischen den Extremen, jedoch näher an den abgelehnten Bewerbern.
    - **Abgelehnte Bewerber (orange Punkte)** sind stark im unteren Bereich der GMAT- und GPA-Werte vertreten.
 
