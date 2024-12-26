@@ -96,3 +96,28 @@ censData$occupation <- factor(censData$occupation, levels=OccLevSort)
 mosaicplot(censData$eduRed ~ censData$occupation, las = 2,
            xlab = 'education', ylab = 'occupation',
            main = "education vs occupation")
+
+#####
+#3
+nzz <- readRDS('./Data/nzz.rds')
+
+#a)
+class(nzz)
+nchar(nzz)
+
+#b)
+nzz <- gsub(pattern = 'ä', replacement = 'ae', x=nzz, ignore.case = T)
+nzz <- gsub(pattern = 'ö', replacement = 'oe', x=nzz, ignore.case = T)
+nzz <- gsub(pattern = 'ü', replacement = 'ue', x=nzz, ignore.case = T)
+
+#c)
+nzzList <- strsplit(x=nzz,split = '[.]')
+nzzVec <- unlist(nzzList)
+
+#d)
+vSel <- which(substr(nzzVec,1,1) == " ")
+nzzVec[vSel] <- substr(nzzVec[vSel], start = 2, stop = nchar(nzzVec)[vSel])
+nzzVec <- paste(nzzVec, ".", sep ="")
+
+#e)
+sum(grepl(pattern = "AHV",x = nzzVec ))
