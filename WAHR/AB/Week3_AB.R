@@ -18,3 +18,4 @@ for (i in 1:n) {
 # Wahrscheindlichkeit, dass nach einem Ass noch ein Ass kommt
 sum(haende$Karte1 %in% asse & haende$Karte2 %in% asse) /
   sum(haende$Karte1 %in% asse)
+

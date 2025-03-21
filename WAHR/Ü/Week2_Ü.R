@@ -23,7 +23,7 @@ count
 sim.res<-count/N
 sim.res
 
-######
+#####
 # A2
 set.seed(125)
 N<-100000 # Anzahl Simulationen
