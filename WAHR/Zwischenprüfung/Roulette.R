@@ -23,7 +23,7 @@ spiele_roulette <- function() {
   
   for (runde in 1:max_runden) {
     gesamteinsatz <- gesamteinsatz + einsatz
-    if (runif(1) < p_rot) {
+    if (runif(1) < p_rot) { #runif(1) # Eine Zufallszahl wzischen 1 und 0
       # Gewinnfall → Auszahlung ist 2 * aktueller Einsatz, minus gesamte Einsätze = Gewinn
       return((2 * einsatz) - gesamteinsatz)
     } else {
