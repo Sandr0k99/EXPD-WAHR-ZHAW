@@ -1,0 +1,62 @@
+---
+title: "Simulation der Super League Saison 2024/25"
+author: "Sandro Kostenzer"
+date: "09.05.2025"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Einleitung
+
+In dieser Arbeit wurde eine Fussball-Simulation der Schweizer Super League Saison 2024/25 durchgeführt. Ziel war es, auf Basis realer Leistungsdaten, Verletzungsrisiken, Altersstruktur und Marktwerten eine Saison statistisch zu modellieren. Die Fragestellung lautete:
+
+**Wie wahrscheinlich ist es, dass ein bestimmtes Team Meister wird und auf welchen Tabellenplätzen könnten die Teams am Ende der Saison landen?**
+
+Motivation: Die Kombination von Statistik, realen Sportdaten und R-Simulation erlaubt es, Szenarien objektiv zu bewerten und stochastische Prozesse realitätsnah zu simulieren.
+
+# Beschreibung des Prozesses
+
+Die Simulation basiert auf folgenden Elementen:
+
+- **Poisson-Verteilung** zur Modellierung der Tore pro Team und Spiel.
+- **Geometrische Wahrscheinlichkeit** (implizit via Bernoulli) für Verletzungen, beeinflusst durch das Durchschnittsalter.
+- **Marktwert** als Skalierungsfaktor für die Offensivkraft.
+- **Simulation von 44 Spielen pro Team** (Hin- und Rückrunde).
+
+```{r daten-prep}
+# (Code zur Vorbereitung der team_stats usw. aus dem Hauptskript hier einfügen)
+```
+
+# Ergebnisse
+
+## Meisterwahrscheinlichkeiten
+
+```{r champion-plot}
+# (Code für champion_probabilities und barplot hier einfügen)
+```
+
+## Platzierungswahrscheinlichkeiten aller Teams
+
+```{r platzierungs-plot}
+# (Code für position_probs und Einzelplots hier einfügen)
+```
+
+# Diskussion
+
+- **Stärken**: Die Simulation verwendet mehrere realitätsnahe Faktoren (z. B. Marktwert, Alter, reale Tore).
+- **Verbesserungspotenzial**:
+  - Berücksichtigung von Heim-/Auswärtsform getrennt
+  - Dynamische Formkurve über die Saison
+  - Verletzungen individueller Schlüsselspieler
+- **Vereinfachungen**:
+  - Verletzungen sind unabhängig von vorherigen Spielen
+  - Alle Teams haben konstante Parameter über die Saison
+
+# Fazit
+
+Die Simulation hat gezeigt, wie mächtig einfache statistische Modelle in Kombination mit realen Daten sein können. Besonders herausfordernd war die sinnvolle Kombination mehrerer Verteilungen und deren Einflussgrössen. Die grafische Aufbereitung der Platzierungswahrscheinlichkeiten bietet wertvolle Einblicke.
+
+**Ich habe gelernt, wie man reale Sportdaten in ein stochastisches Modell überträgt und dieses in R effektiv simuliert.**
